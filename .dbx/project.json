@@ -1,0 +1,13 @@
+{
+    "environments": {
+        "default": {
+            "profile": "e2-demo-emea",
+            "storage_type": "mlflow",
+            "properties": {
+                "workspace_directory": "/Shared/dbx/demo_classifier",
+                "artifact_location": "dbfs:/Shared/dbx/projects/demo_classifier"
+            }
+        }
+    },
+    "inplace_jinja_support": false
+}
