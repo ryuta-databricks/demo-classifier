@@ -22,7 +22,7 @@
 
 # COMMAND ----------
 
-from demo_classifier.tasks.sample_ml_task import SampleMLTask
+from demo_classifier.tasks.ml_task import SampleMLTask
 
 pipeline = SampleMLTask.get_pipeline()
 print(pipeline)
