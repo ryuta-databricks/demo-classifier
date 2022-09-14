@@ -7,7 +7,7 @@ from demo_classifier.utils.logger_utils import get_logger
 _logger = get_logger()
 
 
-class ModelInferenceJob(Task):
+class ModelInferenceTask(Task):
 
     def _get_model_uri(self) -> str:
         model_name = self.env_vars['model_name']
@@ -44,7 +44,7 @@ class ModelInferenceJob(Task):
 
 
 def entrypoint():  # pragma: no cover
-    task = ModelInferenceJob()
+    task = ModelInferenceTask()
     task.launch()
 
 # if you're using spark_python_task, you'll need the __main__ block to start the code execution

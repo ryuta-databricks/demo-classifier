@@ -30,61 +30,6 @@ custom:
 environments:
   dev:
     workflows:
-      #######################################################################################
-      #   Example workflow for integration tests                                            #
-      #######################################################################################
-      - name: "demo-classifier-sample-tests"
-        tasks:
-          - task_key: "main"
-            <<: *dev-cluster-config
-            spark_python_task:
-                python_file: "file://tests/entrypoint.py"
-                # this call supports all standard pytest arguments
-                parameters: ["file:fuse://tests/integration", "--cov=demo_classifier"]
-      #######################################################################################
-      # this is an example job with single ETL task based on 2.1 API and wheel_task format #
-      ######################################################################################
-      - name: "demo-classifier-sample-etl"
-        tasks:
-          - task_key: "main"
-            <<: *dev-cluster-config
-            python_wheel_task:
-              package_name: "demo_classifier"
-              entry_point: "etl" # take a look at the setup.py entry_points section for details on how to define an entrypoint
-              parameters: ["--conf-file", "file:fuse://conf/tasks/etl_config.yml"]
-      #############################################################
-      # this is an example multitask job with notebook task       #
-      #############################################################
-      - name: "demo-classifier-sample-multitask"
-        job_clusters:
-          - job_cluster_key: "default"
-            <<: *dev-cluster-config
-        tasks:
-          - task_key: "etl"
-            job_cluster_key: "default"
-            spark_python_task:
-              python_file: "file://demo_classifier/tasks/etl_task.py"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/etl_config.yml" ]
-          - task_key: "ml"
-            depends_on:
-              - task_key: "etl"
-            job_cluster_key: "default"
-            python_wheel_task:
-              package_name: "demo_classifier"
-              entry_point: "ml"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/ml_config.yml" ]
-          ###############################################################################
-          # this is an example task based on the notebook                               #
-          # Please note that first you'll need to add a Repo and commit notebook to it. #
-          ###############################################################################
-          - task_key: "notebook"
-            deployment_config:
-              no_package: true # we omit using package since code will be shipped directly from the Repo
-            depends_on:
-              - task_key: "ml"
-            job_cluster_key: "default"
-            notebook_task:
-              notebook_path: "/Repos/Staging/demo_classifier/notebooks/sample_notebook"
       - name: "DEV-demo-classifier-feature-table-refresh"
         tasks:
           - task_key: "main"
@@ -121,7 +66,103 @@ environments:
             <<: *dev-cluster-config
             python_wheel_task:
               package_name: "demo_classifier"
-              entry_point: "model_inference-batch"
+              entry_point: "model_inference_batch"
               parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
                             '--env', 'file:fuse://conf/dev/.dev.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_inference_batch_config.yml' ]
+  staging:
+    workflows:
+      - name: "STAGING-demo-classifier-feature-table-refresh"
+        tasks:
+          - task_key: "main"
+            <<: *staging-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "feature_table_refresh"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/staging/.staging.env',
+                            '--conf-file', 'file:fuse://conf/tasks/feature_table_refresh_config.yml' ]
+      - name: "STAGING-demo-classifier-model-train"
+        tasks:
+          - task_key: "main"
+            <<: *staging-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_train"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/staging/.staging.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_train_config.yml' ]
+      - name: "STAGING-demo-classifier-model-deployment"
+        tasks:
+          - task_key: "main"
+            <<: *staging-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_deployment"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/staging/.staging.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_deployment_config.yml' ]
+      - name: "STAGING-demo-classifier-model-inference-batch"
+        tasks:
+          - task_key: "main"
+            <<: *staging-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_inference_batch"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/staging/.staging.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_inference_batch_config.yml' ]
+      - name: "STAGING-demo-classifier-integration-test"
+        tasks:
+          - task_key: "main"
+            <<: *staging-cluster-config
+            spark_python_task:
+              python_file: "file://tests/integration/integration_test.py"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/staging/.staging.env',
+                            '--feature_table_refresh_config', 'file:fuse://conf/tasks/feature_table_refresh_config.yml',
+                            '--model_train_config', 'file:fuse://conf/tasks/model_train_config.yml',
+                            '--model_deployment_config', 'file:fuse://conf/tasks/model_deployment_config.yml',
+                            '--model_inference_batch_config', 'file:fuse://conf/tasks/model_inference_batch_config.yml' ]
+  prod:
+    workflows:
+      - name: "PROD-demo-classifier-feature-table-refresh"
+        tasks:
+          - task_key: "main"
+            <<: *prod-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "feature_table_refresh"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/prod/.prod.env',
+                            '--conf-file', 'file:fuse://conf/tasks/feature_table_refresh_config.yml' ]
+      - name: "PROD-demo-classifier-model-train"
+        tasks:
+          - task_key: "main"
+            <<: *prod-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_train"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/prod/.prod.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_train_config.yml' ]
+      - name: "PROD-demo-classifier-model-deployment"
+        tasks:
+          - task_key: "main"
+            <<: *prod-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_deployment"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/prod/.prod.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_deployment_config.yml' ]
+      - name: "PROD-demo-classifier-model-inference-batch"
+        tasks:
+          - task_key: "main"
+            <<: *prod-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_inference_batch"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/prod/.prod.env',
                             '--conf-file', 'file:fuse://conf/tasks/model_inference_batch_config.yml' ]

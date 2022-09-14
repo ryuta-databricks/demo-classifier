@@ -7,7 +7,7 @@ import sys
 from dataclasses import dataclass
 import yaml
 import pathlib
-import dotenv
+from dotenv import load_dotenv
 from abc import ABC, abstractmethod
 from argparse import ArgumentParser
 from logging import Logger
@@ -124,7 +124,7 @@ class Task(ABC):
 
     @staticmethod
     def _set_environ(env_vars):
-        dotenv.load_dotenv(env_vars)
+        load_dotenv(env_vars)
 
     def get_env_vars_as_dict(self):
         base_data_params = self._get_base_data_params()

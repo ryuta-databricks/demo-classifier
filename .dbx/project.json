@@ -1,17 +1,17 @@
 {
     "environments": {
         "dev": {
-            "profile": "e2-demo-emea",
+            "profile": "e2-demo-field-emea",
             "workspace_dir": "/Users/ryuta.yoshimatsu@databricks.com/demo_classifier/dev/mlops_dev",
             "artifact_location": "dbfs:/Users/ryuta.yoshimatsu@databricks.com/demo_classifier/dev/project/mlops_dev"
         },
         "staging": {
-            "profile": "e2-demo-emea",
+            "profile": "e2-demo-field-emea",
             "workspace_dir": "/Users/ryuta.yoshimatsu@databricks.com/demo_classifier/staging/mlops_staging",
             "artifact_location": "dbfs:/Users/ryuta.yoshimatsu@databricks.com/demo_classifier/staging/project/mlops_staging"
         },
         "prod": {
-            "profile": "e2-demo-emea",
+            "profile": "e2-demo-field-emea",
             "workspace_dir": "/Users/ryuta.yoshimatsu@databricks.com/demo_classifier/prod/mlops_prod",
             "artifact_location": "dbfs:/Users/ryuta.yoshimatsu@databricks.com/demo_classifier/prod/project/mlops_prod"
         }

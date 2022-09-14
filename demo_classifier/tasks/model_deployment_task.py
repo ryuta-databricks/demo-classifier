@@ -5,7 +5,7 @@ from demo_classifier.utils.logger_utils import get_logger
 _logger = get_logger()
 
 
-class ModelDeploymentJob(Task):
+class ModelDeploymentTask(Task):
 
     def _get_mlflow_tracking_cfg(self):
         return MLflowTrackingConfig(experiment_path=self.env_vars['model_deploy_experiment_path'],
@@ -37,7 +37,7 @@ class ModelDeploymentJob(Task):
 
 # if you're using python_wheel_task, you'll need the entrypoint function to be used in setup.py
 def entrypoint():  # pragma: no cover
-    task = ModelDeploymentJob()
+    task = ModelDeploymentTask()
     task.launch()
 
 # if you're using spark_python_task, you'll need the __main__ block to start the code execution

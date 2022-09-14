@@ -18,8 +18,15 @@ conda install -c conda-forge openjdk=11.0.15
 ```
 
 3. Install project locally (this will also install dev requirements):
+
+### Installing project requirements
 ```bash
-pip install -e ".[local,test]"
+pip install -r unit-requirements.txt
+```
+
+### Install project package in a developer mode
+```bash
+pip install -e .
 ```
 
 ## Running unit tests
