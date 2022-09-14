@@ -18,7 +18,7 @@ LOCAL_REQUIREMENTS = [
     "scikit-learn",
     "pandas",
     "mlflow",
-    "python-dotenv==0.20.0",
+    "python-dotenv",
 ]
 
 TEST_REQUIREMENTS = [
@@ -35,7 +35,7 @@ TEST_REQUIREMENTS = [
     "pytest-cov==3.0.0",
     "dbx>=0.7,<0.8"
     "delta-spark",
-    "python-dotenv==0.20.0",
+    "python-dotenv",
 ]
 
 setup(
