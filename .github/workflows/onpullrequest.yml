@@ -1,22 +1,23 @@
 name: CI pipeline
 
 on:
-  push:
+  pull_request:
     branches:
-      - '**'
+      - main
     tags-ignore:
       - 'v*' # this tag type is used for release pipelines
 
 jobs:
   ci-pipeline:
 
+    environment: "STAGING"
     runs-on: ubuntu-latest
     strategy:
       max-parallel: 4
 
     env:
-      DATABRICKS_HOST: ${{ secrets.DATABRICKS_HOST }}
-      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_TOKEN }}
+      DATABRICKS_HOST: ${{ secrets.DATABRICKS_STAGING_HOST }}
+      DATABRICKS_TOKEN:  ${{ secrets.DATABRICKS_STAGING_TOKEN }}
 
     steps:
       - uses: actions/checkout@v1
@@ -41,12 +42,10 @@ jobs:
           echo "Launching unit tests"
           pytest tests/unit
 
-      - name: Workflow deployment (assets only upload)
+      - name: Deploy integration test [staging environment]
         run: |
-          dbx deploy demo-classifier-sample-etl --assets-only
+          dbx deploy STAGING-demo-classifier-integration-test --environment=staging --assets-only
 
-      - name: Run the workflow in a jobless fashion
+      - name: Run integration test [staging environment]
         run: |
-          dbx launch demo-classifier-sample-etl --from-assets --trace
-
-
+          dbx launch STAGING-demo-classifier-integration-test --from-assets --trace

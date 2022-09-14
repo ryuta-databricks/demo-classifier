@@ -49,7 +49,7 @@ setup(
             "feature_table_refresh = demo_classifier.tasks.feature_table_refresh_task:entrypoint",
             "model_train = demo_classifier.tasks.model_train_task:entrypoint",
             "model_deployment = demo_classifier.tasks.model_deployment_task:entrypoint",
-            "model_inference-batch = demo_classifier.tasks.model_inference_batch_task:entrypoint",
+            "model_inference_batch = demo_classifier.tasks.model_inference_batch_task:entrypoint",
     ]},
     version=__version__,
     description="",

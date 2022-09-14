@@ -6,7 +6,7 @@ from demo_classifier.utils.logger_utils import get_logger
 _logger = get_logger()
 
 
-class FeatureTableRefresherJob(Task):
+class FeatureTableRefresherTask(Task):
 
     def _get_input_table(self) -> dict:
         return self.conf['input_table']
@@ -41,7 +41,7 @@ class FeatureTableRefresherJob(Task):
 
 # if you're using python_wheel_task, you'll need the entrypoint function to be used in setup.py
 def entrypoint():  # pragma: no cover
-    task = FeatureTableRefresherJob()
+    task = FeatureTableRefresherTask()
     task.launch()
 
 # if you're using spark_python_task, you'll need the __main__ block to start the code execution
