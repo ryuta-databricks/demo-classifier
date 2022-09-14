@@ -44,7 +44,7 @@ jobs:
 
       - name: Install python-dotenv
         run: |
-          pip install python-dotenv
+          pip3 install python-dotenv
 
       - name: Deploy integration test [staging environment]
         run: |
