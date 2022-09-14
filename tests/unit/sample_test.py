@@ -1,5 +1,5 @@
-from demo_classifier.tasks.sample_etl_task import SampleETLTask
-from demo_classifier.tasks.sample_ml_task import SampleMLTask
+from demo_classifier.tasks.etl_task import SampleETLTask
+from demo_classifier.tasks.ml_task import SampleMLTask
 from pyspark.sql import SparkSession
 from pathlib import Path
 import mlflow

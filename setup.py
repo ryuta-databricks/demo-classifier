@@ -18,14 +18,24 @@ LOCAL_REQUIREMENTS = [
     "scikit-learn",
     "pandas",
     "mlflow",
+    "python-dotenv==0.20.0",
 ]
 
 TEST_REQUIREMENTS = [
     # development & testing tools
-    "pytest",
     "coverage[toml]",
-    "pytest-cov",
+    "setuptools==58.0.4",
+    "wheel==0.37.0",
+    "pyspark",
+    "numpy==1.20.3",
+    "pandas==1.3.4",
+    "scikit-learn==0.24.2",
+    "pyyaml==6.0",
+    "pytest==7.1.2",
+    "pytest-cov==3.0.0",
     "dbx>=0.7,<0.8"
+    "delta-spark",
+    "python-dotenv==0.20.0",
 ]
 
 setup(
@@ -36,8 +46,10 @@ setup(
     extras_require={"local": LOCAL_REQUIREMENTS, "test": TEST_REQUIREMENTS},
     entry_points = {
         "console_scripts": [
-            "etl = demo_classifier.tasks.sample_etl_task:entrypoint",
-            "ml = demo_classifier.tasks.sample_ml_task:entrypoint",
+            "feature_table_refresh = demo_classifier.tasks.feature_table_refresh_task:entrypoint",
+            "model_train = demo_classifier.tasks.model_train_task:entrypoint",
+            "model_deployment = demo_classifier.tasks.model_deployment_task:entrypoint",
+            "model_inference-batch = demo_classifier.tasks.model_inference_batch_task:entrypoint",
     ]},
     version=__version__,
     description="",

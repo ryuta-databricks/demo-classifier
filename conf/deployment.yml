@@ -1,17 +1,34 @@
 # Custom section is used to store configurations that might be repetative.
 # Please read YAML documentation for details on how to use substitutions and anchors.
 custom:
-  basic-cluster-props: &basic-cluster-props
-    spark_version: "10.4.x-cpu-ml-scala2.12"
 
-  basic-static-cluster: &basic-static-cluster
+  # Cluster configs for each environment
+  default-cluster-spec: &default-cluster-spec
+    spark_version: '11.0.x-cpu-ml-scala2.12'
+    node_type_id: 'i3.xlarge' # NOTE: this is an AWS-specific instance type. Change accordingly if running on Azure or GCP.
+    driver_node_type_id: 'i3.xlarge'  # NOTE: this is an AWS-specific instance type. Change accordingly if running on Azure or GCP.
+    num_workers: 1
+    # To reduce start up time for each job, it is advisable to use a cluster pool. To do so involves supplying the following
+    # two fields with a pool_id to acquire both the driver and instances from.
+    # If driver_instance_pool_id and instance_pool_id are set, both node_type_id and driver_node_type_id CANNOT be supplied.
+    # As such, if providing a pool_id for driver and worker instances, please ensure that node_type_id and driver_node_type_id are not present
+    #    driver_instance_pool_id: '0617-151415-bells2-pool-hh7h6tjm'
+    #    instance_pool_id: '0617-151415-bells2-pool-hh7h6tjm'
+
+  dev-cluster-config: &dev-cluster-config
     new_cluster:
-      <<: *basic-cluster-props
-      num_workers: 1
-      node_type_id: "i3.xlarge"
+      <<: *default-cluster-spec
+
+  staging-cluster-config: &staging-cluster-config
+    new_cluster:
+      <<: *default-cluster-spec
+
+  prod-cluster-config: &prod-cluster-config
+    new_cluster:
+      <<: *default-cluster-spec
 
 environments:
-  default:
+  dev:
     workflows:
       #######################################################################################
       #   Example workflow for integration tests                                            #
@@ -19,7 +36,7 @@ environments:
       - name: "demo-classifier-sample-tests"
         tasks:
           - task_key: "main"
-            <<: *basic-static-cluster
+            <<: *dev-cluster-config
             spark_python_task:
                 python_file: "file://tests/entrypoint.py"
                 # this call supports all standard pytest arguments
@@ -30,24 +47,24 @@ environments:
       - name: "demo-classifier-sample-etl"
         tasks:
           - task_key: "main"
-            <<: *basic-static-cluster
+            <<: *dev-cluster-config
             python_wheel_task:
               package_name: "demo_classifier"
               entry_point: "etl" # take a look at the setup.py entry_points section for details on how to define an entrypoint
-              parameters: ["--conf-file", "file:fuse://conf/tasks/sample_etl_config.yml"]
+              parameters: ["--conf-file", "file:fuse://conf/tasks/etl_config.yml"]
       #############################################################
       # this is an example multitask job with notebook task       #
       #############################################################
       - name: "demo-classifier-sample-multitask"
         job_clusters:
           - job_cluster_key: "default"
-            <<: *basic-static-cluster
+            <<: *dev-cluster-config
         tasks:
           - task_key: "etl"
             job_cluster_key: "default"
             spark_python_task:
-              python_file: "file://demo_classifier/tasks/sample_etl_task.py"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/sample_etl_config.yml" ]
+              python_file: "file://demo_classifier/tasks/etl_task.py"
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/etl_config.yml" ]
           - task_key: "ml"
             depends_on:
               - task_key: "etl"
@@ -55,7 +72,7 @@ environments:
             python_wheel_task:
               package_name: "demo_classifier"
               entry_point: "ml"
-              parameters: [ "--conf-file", "file:fuse://conf/tasks/sample_ml_config.yml" ]
+              parameters: [ "--conf-file", "file:fuse://conf/tasks/ml_config.yml" ]
           ###############################################################################
           # this is an example task based on the notebook                               #
           # Please note that first you'll need to add a Repo and commit notebook to it. #
@@ -68,4 +85,43 @@ environments:
             job_cluster_key: "default"
             notebook_task:
               notebook_path: "/Repos/Staging/demo_classifier/notebooks/sample_notebook"
-
+      - name: "DEV-demo-classifier-feature-table-refresh"
+        tasks:
+          - task_key: "main"
+            <<: *dev-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "feature_table_refresh"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/dev/.dev.env',
+                            '--conf-file', 'file:fuse://conf/tasks/feature_table_refresh_config.yml' ]
+      - name: "DEV-demo-classifier-model-train"
+        tasks:
+          - task_key: "main"
+            <<: *dev-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_train"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/dev/.dev.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_train_config.yml' ]
+      - name: "DEV-demo-classifier-model-deployment"
+        tasks:
+          - task_key: "main"
+            <<: *dev-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_deployment"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/dev/.dev.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_deployment_config.yml' ]
+      - name: "DEV-demo-classifier-model-inference-batch"
+        tasks:
+          - task_key: "main"
+            <<: *dev-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_inference-batch"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/dev/.dev.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_inference_batch_config.yml' ]
