@@ -24,7 +24,7 @@ LOCAL_REQUIREMENTS = [
 TEST_REQUIREMENTS = [
     # development & testing tools
     "coverage[toml]",
-    "setuptools==58.0.4",
+    "setuptools==58.1.0",
     "wheel==0.37.0",
     "pyspark",
     "numpy==1.20.3",

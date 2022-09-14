@@ -42,10 +42,14 @@ jobs:
           echo "Launching unit tests"
           pytest tests/unit
 
+      - name: Install python-dotenv
+        run: |
+          pip install python-dotenv
+
       - name: Deploy integration test [staging environment]
         run: |
           dbx deploy STAGING-demo-classifier-integration-test --environment=staging --assets-only
 
       - name: Run integration test [staging environment]
         run: |
-          dbx launch STAGING-demo-classifier-integration-test --environment=staging --from-assets --trace --debug
+          dbx launch STAGING-demo-classifier-integration-test --environment=staging --from-assets --trace
