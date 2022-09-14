@@ -34,7 +34,8 @@ jobs:
 
       - name: Install dependencies and project in dev mode
         run: |
-          pip install -e ".[local,test]"
+          pip install -r unit-requirements.txt
+          pip install -e .
 
       - name: Deploy PROD-demo-classifier-model-train job [prod environment]
         run: |
