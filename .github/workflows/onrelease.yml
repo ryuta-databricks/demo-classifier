@@ -43,7 +43,7 @@ jobs:
 
       - name: Deploy PROD-demo-classifier-model-deployment job [prod environment]
         run: |
-          dbx deploy --deployment-file conf/deployment.yml PROD-v-model-deployment --environment=prod
+          dbx deploy --deployment-file conf/deployment.yml PROD-demo-classifier-model-deployment --environment=prod
 
       - name: Deploy PROD-demo-classifier-model-inference-batch job [prod environment]
         run: |
