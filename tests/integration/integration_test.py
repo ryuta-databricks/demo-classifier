@@ -4,7 +4,7 @@ import yaml
 import pathlib
 from pyspark.dbutils import DBUtils  # noqa
 from argparse import ArgumentParser
-#from demo_classifier.tasks.feature_table_refresh_task import FeatureTableRefresherTask
+from demo_classifier.tasks.feature_table_refresh_task import FeatureTableRefresherTask
 from demo_classifier.tasks.model_train_task import ModelTrainTask
 from demo_classifier.tasks.model_deployment_task import ModelDeploymentTask
 from demo_classifier.tasks.model_inference_batch_task import ModelInferenceTask
@@ -21,13 +21,13 @@ def _get_conf(conf: str):
 class IntegrationTest(unittest.TestCase):
 
     def setUp(self):
-        # self.feature_table_creator_job = FeatureTableCreatorJob(init_conf=_get_conf('feature_table_refresh_config'))
+        self.feature_table_refresher_task = FeatureTableRefresherTask(init_conf=_get_conf('feature_table_refresh_config'))
         self.model_train_task = ModelTrainTask(init_conf=_get_conf('model_train_config'))
         self.model_deployment_task = ModelDeploymentTask(init_conf=_get_conf('model_deployment_config'))
         self.model_inference_task = ModelInferenceTask(init_conf=_get_conf('model_inference_batch_config'))
 
     def test_sample(self):
-        # self.feature_table_creator_job.launch()
+        self.feature_table_refresher_task.launch()
         self.model_train_task.launch()
         self.model_deployment_task.launch()
         self.model_inference_task.launch()
