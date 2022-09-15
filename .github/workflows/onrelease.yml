@@ -37,6 +37,10 @@ jobs:
           pip install -r unit-requirements.txt
           pip install -e .
 
+      - name: Deploy PROD-demo-classifier-feature-table-refresh job [prod environment]
+        run: |
+          dbx deploy --deployment-file conf/deployment.yml PROD-demo-classifier-feature-table-refresh --environment=prod
+
       - name: Deploy PROD-demo-classifier-model-train job [prod environment]
         run: |
           dbx deploy --deployment-file conf/deployment.yml PROD-demo-classifier-model-train --environment=prod
