@@ -38,22 +38,18 @@ class FeatureTableRefresher:
         self.cfg = cfg
 
     @staticmethod
-    def setup(database_name: str, table_name: str) -> None:
+    def setup(database_name: str) -> None:
         """
-        Set up database to use. Create the database {database_name} if it doesn't exist, and drop the table {table_name}
-        if it exists
+        Set up database to use. Create the database {database_name} if it doesn't exist
 
         Parameters
         ----------
         database_name : str
             Database to create if it doesn't exist. Otherwise use database of the name provided
-        table_name : str
-            Drop table if it already exists
         """
         _logger.info(f'Creating database {database_name} if not exists')
         spark.sql(f'CREATE DATABASE IF NOT EXISTS {database_name};')
         spark.sql(f'USE {database_name};')
-        spark.sql(f'DROP TABLE IF EXISTS {table_name};')
 
     def run_data_ingest(self) -> pyspark.sql.DataFrame:
         """
@@ -88,14 +84,14 @@ class FeatureTableRefresher:
 
     def run_feature_table_refresh(self, df: pyspark.sql.DataFrame) -> None:
         """
-        Method to refresh feature table in Databricks Feature Store. When run, this method will create from scratch the
-        feature table. As such, we first create (if it doesn't exist) the database specified, and drop the table if it
-        already exists.
+        Method to refresh feature table in Databricks Feature Store. When run, this method will refresh the feature
+        table. As such, we first create (if it doesn't exist) the database specified, and drop the table if it already
+        exists.
 
         The feature table is created from the Spark DataFrame provided, dropping the label column if it exists in the
         DataFrame. The label column cannot be present in the feature table when later constructing a feature store
         training set from the feature table. The feature table will be created using the primary keys and description
-        proivided via feature_store_table_cfg.
+        provided via feature_store_table_cfg.
 
         Parameters
         ----------
@@ -104,17 +100,18 @@ class FeatureTableRefresher:
         """
         feature_store_table_cfg = self.cfg.feature_store_table_cfg
 
-        # Create database if not exists, drop table if it already exists
-        self.setup(database_name=feature_store_table_cfg.database_name,
-                   table_name=feature_store_table_cfg.table_name)
+        # Create database and the table if not exists
+        self.setup(database_name=feature_store_table_cfg.database_name)
 
         # Store only features for each customerID, storing customerID, churn in separate churn_labels table
         # During model training we will use the churn_labels table to join features into
         features_df = df.drop(self.cfg.labels_table_cfg.label_col)
-        feature_table_name = f'{feature_store_table_cfg.database_name}.{feature_store_table_cfg.table_name}'
-        _logger.info(f'Creating and writing features to feature table: {feature_table_name}')
+        feature_table_name = feature_store_table_cfg.table_name
+        database_name = feature_store_table_cfg.database_name
+        _logger.info(f'Writing features to feature table: {feature_table_name}')
         feature_store_utils.create_and_write_feature_table(features_df,
                                                            feature_table_name,
+                                                           database_name,
                                                            primary_keys=feature_store_table_cfg.primary_keys,
                                                            description=feature_store_table_cfg.description)
 
@@ -145,8 +142,10 @@ class FeatureTableRefresher:
         labels_database_name = labels_table_cfg.database_name
         labels_table_name = labels_table_cfg.table_name
         labels_dbfs_path = labels_table_cfg.dbfs_path
-        # Create database if not exists, drop table if it already exists
-        self.setup(database_name=labels_database_name, table_name=labels_table_name)
+        # Create database if not exists
+        self.setup(database_name=labels_database_name)
+        # Drop table if it exists
+        spark.sql(f"""DROP TABLE IF EXISTS {labels_database_name}.{labels_table_name};""")
         # DataFrame of customerID/churn labels
         labels_df = df.select(labels_table_cols)
         _logger.info(f'Writing labels to DBFS: {labels_dbfs_path}')

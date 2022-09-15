@@ -33,9 +33,9 @@ class FeatureTableRefresherTask(Task):
         _logger.info('Launching FeatureTableRefresher job')
         _logger.info(f'Running feature-table-refresher pipeline in {self.env_vars["env"]} environment')
         cfg = FeatureTableRefresherConfig(input_table=self._get_input_table(),
-                                        featurizer_cfg=self._get_data_prep_params(),
-                                        feature_store_table_cfg=self._get_feature_store_table_cfg(),
-                                        labels_table_cfg=self._get_labels_table_cfg())
+                                          featurizer_cfg=self._get_data_prep_params(),
+                                          feature_store_table_cfg=self._get_feature_store_table_cfg(),
+                                          labels_table_cfg=self._get_labels_table_cfg())
         FeatureTableRefresher(cfg).run()
         _logger.info('FeatureTableRefresher job finished!')
 
