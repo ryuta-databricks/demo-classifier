@@ -166,3 +166,20 @@ environments:
               parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
                             '--env', 'file:fuse://conf/prod/.prod.env',
                             '--conf-file', 'file:fuse://conf/tasks/model_inference_batch_config.yml' ]
+      - name: 'PROD-demo-classifier-initial-model-train-register'
+        tasks:
+          - task_key: 'feature-table-refresh'
+            <<: *prod-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "feature_table_refresh"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/prod/.prod.env',
+                            '--conf-file', 'file:fuse://conf/tasks/feature_table_refresh_config.yml' ]
+          - task_key: 'model-train'
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "feature_table_refresh"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/prod/.prod.env',
+                            '--conf-file', 'file:fuse://conf/tasks/feature_table_refresh_config.yml' ]
