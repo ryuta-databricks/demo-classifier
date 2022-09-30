@@ -15,6 +15,7 @@ setup(
     entry_points={
         "console_scripts": [
             "feature_table_refresh = demo_classifier.tasks.feature_table_refresh_task:entrypoint",
+            "model_sanity_check = demo_classifier.tasks.model_sanity_check_task:entrypoint",
             "model_train = demo_classifier.tasks.model_train_task:entrypoint",
             "model_deployment = demo_classifier.tasks.model_deployment_task:entrypoint",
             "model_inference_batch = demo_classifier.tasks.model_inference_batch_task:entrypoint",
