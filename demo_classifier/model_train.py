@@ -13,6 +13,7 @@ from databricks.feature_store import FeatureStoreClient, FeatureLookup
 
 from demo_classifier.common import MLflowTrackingConfig, FeatureStoreTableConfig, LabelsTableConfig
 from demo_classifier.model_train_pipeline import ModelTrainPipeline
+from demo_classifier.create_webhook import WebhookCreationConfig, WebhookCreation
 from demo_classifier.utils.get_spark import spark
 from demo_classifier.utils.logger_utils import get_logger
 
@@ -145,6 +146,18 @@ class ModelTrain:
 
         return X_train, X_test, y_train, y_test
 
+    def create_webhook(self) -> None:
+        """
+        Create webhook for the model if it doesn't exit.
+        """
+        _logger.info('')
+        cfg = WebhookCreationConfig(
+            model_name=self.cfg.env_vars['model_name'],
+            sanity_check_job_name=self.cfg.env_vars['sanity_check_job_name']
+        )
+        WebhookCreation(cfg).run()
+        return None
+
     def fit_pipeline(self, X_train: pd.DataFrame, y_train: pd.Series) -> sklearn.pipeline.Pipeline:
         """
         Create sklearn pipeline and fit pipeline.
@@ -182,7 +195,8 @@ class ModelTrain:
             5. Define sklearn pipeline using ModelTrainPipeline, and fit on train data
             6. Log trained model using the Databricks Feature Store API. Model will be logged to MLflow with associated
                feature table metadata.
-            7. Register the model to MLflow model registry if model_name is provided in mlflow_params
+            7. Create a webhook to run a job to execute sanity checks and promote the model to Staging
+            8. Register the model to MLflow model registry if model_name is provided in mlflow_params
         """
         _logger.info('==========Running model training==========')
         mlflow_tracking_cfg = self.cfg.mlflow_tracking_cfg
@@ -230,6 +244,10 @@ class ModelTrain:
             _logger.info('Evaluating and logging metrics')
             test_metrics = mlflow.sklearn.eval_and_log_metrics(model, X_test, y_test, prefix='test_')
             print(pd.DataFrame(test_metrics, index=[0]))
+
+            # Create a webhook if it doesn't exist
+            _logger.info(f"==========Webhook Creation==========")
+            self.create_webhook()
 
             # Register model to MLflow Model Registry if provided
             if mlflow_tracking_cfg.model_name is not None:

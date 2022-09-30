@@ -1,0 +1,23 @@
+expected_input_schema:
+    contract: 'string'
+    dependents: 'string'
+    deviceProtection: 'string'
+    gender: 'string'
+    internetService: 'string'
+    monthlyCharges: 'double'
+    multipleLines: 'string'
+    onlineBackup: 'string'
+    onlineSecurity: 'string'
+    paperlessBilling: 'string'
+    partner: 'string'
+    paymentMethod: 'string'
+    phoneService: 'string'
+    seniorCitizen: 'double'
+    streamingMovies: 'string'
+    streamingTV: 'string'
+    techSupport: 'string'
+    tenure: 'double'
+    totalCharges: 'double'
+
+expected_output_schema:
+    dtype: 'int32'
