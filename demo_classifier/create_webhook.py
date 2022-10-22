@@ -77,10 +77,6 @@ class WebhookCreation:
     def run(self):
         """
         Method to trigger webhook creation.
-        Steps:
-            1.
-            2.
-            3.
         """
         dbutils = get_dbutils(spark)
         token = dbutils.notebook.entry_point.getDbutils().notebook().getContext().apiToken().getOrElse(None)

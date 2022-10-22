@@ -40,16 +40,6 @@ environments:
               parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
                             '--env', 'file:fuse://conf/dev/.dev.env',
                             '--conf-file', 'file:fuse://conf/tasks/feature_table_refresh_config.yml' ]
-      - name: "DEV-demo-classifier-model-sanity-check"
-        tasks:
-          - task_key: "main"
-            <<: *dev-cluster-config
-            python_wheel_task:
-              package_name: "demo_classifier"
-              entry_point: "model_sanity_check"
-              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
-                            '--env', 'file:fuse://conf/dev/.dev.env',
-                            '--conf-file', 'file:fuse://conf/tasks/model_sanity_check_config.yml' ]
       - name: "DEV-demo-classifier-model-train"
         tasks:
           - task_key: "main"
@@ -60,6 +50,16 @@ environments:
               parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
                             '--env', 'file:fuse://conf/dev/.dev.env',
                             '--conf-file', 'file:fuse://conf/tasks/model_train_config.yml' ]
+      - name: "DEV-demo-classifier-model-sanity-check"
+        tasks:
+          - task_key: "main"
+            <<: *dev-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_sanity_check"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/dev/.dev.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_sanity_check_config.yml' ]
       - name: "DEV-demo-classifier-model-deployment"
         tasks:
           - task_key: "main"
@@ -92,16 +92,6 @@ environments:
               parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
                             '--env', 'file:fuse://conf/staging/.staging.env',
                             '--conf-file', 'file:fuse://conf/tasks/feature_table_refresh_config.yml' ]
-      - name: "STAGING-demo-classifier-model-sanity-check"
-        tasks:
-          - task_key: "main"
-            <<: *staging-cluster-config
-            python_wheel_task:
-              package_name: "demo_classifier"
-              entry_point: "model_sanity_check"
-              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
-                            '--env', 'file:fuse://conf/staging/.staging.env',
-                            '--conf-file', 'file:fuse://conf/tasks/model_sanity_check_config.yml' ]
       - name: "STAGING-demo-classifier-model-train"
         tasks:
           - task_key: "main"
@@ -112,6 +102,16 @@ environments:
               parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
                             '--env', 'file:fuse://conf/staging/.staging.env',
                             '--conf-file', 'file:fuse://conf/tasks/model_train_config.yml' ]
+      - name: "STAGING-demo-classifier-model-sanity-check"
+        tasks:
+          - task_key: "main"
+            <<: *staging-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_sanity_check"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/staging/.staging.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_sanity_check_config.yml' ]
       - name: "STAGING-demo-classifier-model-deployment"
         tasks:
           - task_key: "main"
@@ -156,16 +156,6 @@ environments:
               parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
                             '--env', 'file:fuse://conf/prod/.prod.env',
                             '--conf-file', 'file:fuse://conf/tasks/feature_table_refresh_config.yml' ]
-      - name: "PROD-demo-classifier-model-sanity-check"
-        tasks:
-          - task_key: "main"
-            <<: *prod-cluster-config
-            python_wheel_task:
-              package_name: "demo_classifier"
-              entry_point: "model_sanity_check"
-              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
-                            '--env', 'file:fuse://conf/prod/.prod.env',
-                            '--conf-file', 'file:fuse://conf/tasks/model_sanity_check_config.yml' ]
       - name: "PROD-demo-classifier-model-train"
         tasks:
           - task_key: "main"
@@ -176,6 +166,16 @@ environments:
               parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
                             '--env', 'file:fuse://conf/prod/.prod.env',
                             '--conf-file', 'file:fuse://conf/tasks/model_train_config.yml' ]
+      - name: "PROD-demo-classifier-model-sanity-check"
+        tasks:
+          - task_key: "main"
+            <<: *prod-cluster-config
+            python_wheel_task:
+              package_name: "demo_classifier"
+              entry_point: "model_sanity_check"
+              parameters: [ '--base-data-params', 'file:fuse://conf/.base_data_params.env',
+                            '--env', 'file:fuse://conf/prod/.prod.env',
+                            '--conf-file', 'file:fuse://conf/tasks/model_sanity_check_config.yml' ]
       - name: "PROD-demo-classifier-model-deployment"
         tasks:
           - task_key: "main"
