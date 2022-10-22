@@ -108,7 +108,7 @@ class ModelSanityCheck:
 
     def run(self):
         """
-        Method to trigger model sanity check.
+        Method to trigger model sanity check on the latest model version.
         Steps:
             1. Apply model signature check
             2. Apply model prediction check
